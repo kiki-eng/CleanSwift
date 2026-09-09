@@ -51,6 +51,14 @@ export function LoginScreen(): React.JSX.Element {
         textContentType="password"
       />
 
+      <Button
+        title="Forgot password?"
+        variant="ghost"
+        size="sm"
+        onPress={() => navigation.navigate('ForgotPassword')}
+        style={styles.forgot}
+      />
+
       {login.isError ? (
         <Text style={styles.error}>{login.error.message}</Text>
       ) : null}
@@ -88,6 +96,7 @@ const styles = StyleSheet.create({
     color: colors.danger,
     marginBottom: spacing.lg,
   },
+  forgot: { alignSelf: 'flex-end', marginBottom: spacing.sm },
   submit: { marginTop: spacing.sm },
   footer: {
     flexDirection: 'row',

@@ -2,8 +2,10 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { ChooseRoleScreen } from '../screens/auth/ChooseRoleScreen';
+import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
 import { LoginScreen } from '../screens/auth/LoginScreen';
 import { OnboardingScreen } from '../screens/auth/OnboardingScreen';
+import { ResetPasswordScreen } from '../screens/auth/ResetPasswordScreen';
 import { SignUpScreen } from '../screens/auth/SignUpScreen';
 import { colors } from '../theme';
 import type { AuthStackParamList } from '../types/navigation';
@@ -21,6 +23,8 @@ export function AuthNavigator(): React.JSX.Element {
       <Stack.Screen name="ChooseRole" component={ChooseRoleScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
     </Stack.Navigator>
   );
 }

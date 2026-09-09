@@ -39,11 +39,13 @@ npm run android
 src/
 ├── api/          # axios client, endpoint map, envelope types
 ├── components/   # UI kit: Button, Input, Card, Avatar, Rating, Badge,
-│                 #   Empty/Error/Loading states, BottomSheet, Screen
-├── config/       # env.ts — backend URL & tunables
+│                 #   Empty/Error/Loading states, BottomSheet, Screen,
+│                 #   SegmentedControl, ChipGroup, ScheduleSheet, ReviewSheet,
+│                 #   RatingInput, NotificationBell
+├── config/       # env.ts — per-environment backend URL & tunables
 ├── features/     # domain logic (React Query hooks + API calls per domain)
-│   ├── auth/  bookings/  cleaners/  jobs/  profile/  reviews/
-├── hooks/        # generic reusable hooks
+│   ├── applications/  auth/  bookings/  cleaners/  dashboard/
+│   ├── jobs/  listings/  notifications/  profile/  requests/  reviews/
 ├── navigation/   # Root / Auth / CustomerTabs / CleanerTabs
 ├── screens/      # thin screens composed from features + components
 │   ├── auth/  customer/  cleaner/  shared/
@@ -51,7 +53,7 @@ src/
 ├── store/        # zustand authStore (session only)
 ├── theme/        # colors, spacing, radii, shadows, typography
 ├── types/        # API models, enums, navigation param lists
-└── utils/        # formatters (money, dates, names)
+└── utils/        # formatters (money, dates, names) + pagination helpers
 ```
 
 ## Conventions
@@ -62,10 +64,25 @@ src/
 - **Backend quirks handled centrally:** `/auth/me` nests the user under `data.user`; `/cleaner-profiles/me` returns 403 for customers; refresh responses may omit the refresh token (the old one is kept).
 - **Roles:** registering as a cleaner immediately yields role `CLEANER` with a `PENDING` profile — the cleaner home shows an approval banner and locks job actions until `APPROVED`.
 
+## Features
+
+**Customer:** onboarding, signup/login, password reset, home dashboard, browse/search cleaner
+listings, cleaner profile with reviews, direct booking (listing request), post a cleaning job
+(first-come or pick-from-applicants), bookings list with status filters, booking details with
+cancel/review, applications review + accept, notifications, edit profile, change password,
+verify email, notification preferences, account deactivation.
+
+**Cleaner:** signup with application (individual/company), approval-status banner, jobs board
+(open / mine / booking requests), accept/apply/start/complete jobs, accept/reject/start/complete
+booking requests, listings management (create/edit/pause/delete), earnings from the dashboard
+API, notifications, profile/settings.
+
 ## Status
 
-Done: architecture, theme/design system, navigation (role-based), auth (splash/onboarding/choose-role/login/signup), Customer Home, Cleaner Home, Profile, Settings.
+All customer and cleaner flows above are wired to the live backend. Not yet implemented:
+push-notification delivery (requires an FCM/Firebase setup — the backend's
+`/notifications/device-token` endpoints are ready), social sign-in (Google/Apple SDKs), and
+file/photo upload for avatars and listing images.
 
-Next feature passes: create-request form, cleaner search/details + direct booking, bookings list/details with status actions, cleaner jobs board, reviews, push notifications (FCM).
-
-> `legacy-swiftui-app/` contains the earlier native SwiftUI prototype, kept for reference.
+> The earlier native SwiftUI prototype (`legacy-swiftui-app/`) was removed after the React
+> Native port reached feature parity; it remains available in git history.

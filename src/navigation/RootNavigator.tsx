@@ -5,7 +5,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BookingDetailsScreen } from '../screens/customer/BookingDetailsScreen';
 import { CleanerDetailsScreen } from '../screens/customer/CleanerDetailsScreen';
 import { CreateRequestScreen } from '../screens/customer/CreateRequestScreen';
+import { ChangePasswordScreen } from '../screens/shared/ChangePasswordScreen';
+import { EditProfileScreen } from '../screens/shared/EditProfileScreen';
+import { NotificationsScreen } from '../screens/shared/NotificationsScreen';
 import { SettingsScreen } from '../screens/shared/SettingsScreen';
+import { VerifyEmailScreen } from '../screens/shared/VerifyEmailScreen';
 import { SplashScreen } from '../screens/auth/SplashScreen';
 import { useAuthStore } from '../store/authStore';
 import { colors } from '../theme';
@@ -52,6 +56,26 @@ export function RootNavigator(): React.JSX.Element {
               name="BookingDetails"
               component={BookingDetailsScreen}
               options={{ headerShown: true, title: 'Booking' }}
+            />
+            <Stack.Screen
+              name="Notifications"
+              component={NotificationsScreen}
+              options={{ headerShown: true, title: 'Notifications' }}
+            />
+            <Stack.Screen
+              name="EditProfile"
+              component={EditProfileScreen}
+              options={{ headerShown: true, title: 'Edit Profile' }}
+            />
+            <Stack.Screen
+              name="ChangePassword"
+              component={ChangePasswordScreen}
+              options={{ headerShown: true, title: 'Change Password' }}
+            />
+            <Stack.Screen
+              name="VerifyEmail"
+              component={VerifyEmailScreen}
+              options={{ headerShown: true, title: 'Verify Email' }}
             />
             <Stack.Screen
               name="Settings"

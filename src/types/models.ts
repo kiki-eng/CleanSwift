@@ -134,6 +134,36 @@ export interface AppNotification {
   status: NotificationStatus;
   entity_type?: string | null;
   entity_id?: string | null;
+  action_url?: string | null;
+  read_at?: number | null;
+}
+
+export interface NotificationPreferences {
+  job_updates?: boolean;
+  payment_alerts?: boolean;
+  application_updates?: boolean;
+  push_notifications?: boolean;
+  email_notifications?: boolean;
+}
+
+export interface UserPreferences {
+  timezone?: string | null;
+  notifications?: NotificationPreferences | null;
+  settings?: Record<string, unknown> | null;
+}
+
+export interface CustomerDashboard {
+  total_requests: number;
+  total_jobs_booked: number;
+  total_spent: number;
+}
+
+export interface CleanerDashboard {
+  total_jobs: number;
+  total_listings: number;
+  active_listings: number;
+  completed_requests: number;
+  total_earnings: number;
 }
 
 export interface AuthTokens {

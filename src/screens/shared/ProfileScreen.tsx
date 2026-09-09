@@ -45,18 +45,33 @@ export function ProfileScreen(): React.JSX.Element {
 
       <View style={styles.rows}>
         <ProfileRow
+          icon="create-outline"
+          label="Edit profile"
+          onPress={() => navigation.navigate('EditProfile')}
+        />
+        <ProfileRow
+          icon="key-outline"
+          label="Change password"
+          onPress={() => navigation.navigate('ChangePassword')}
+        />
+        <ProfileRow
           icon="settings-outline"
           label="Settings"
           onPress={() => navigation.navigate('Settings')}
         />
+        {user.email_verified === false ? (
+          <ProfileRow
+            icon="alert-circle-outline"
+            label="Verify your email"
+            warning
+            onPress={() => navigation.navigate('VerifyEmail')}
+          />
+        ) : null}
         {user.phone_number ? (
           <ProfileRow icon="call-outline" label={user.phone_number} />
         ) : null}
         {user.location ? (
           <ProfileRow icon="location-outline" label={user.location} />
-        ) : null}
-        {user.email_verified === false ? (
-          <ProfileRow icon="alert-circle-outline" label="Email not verified" warning />
         ) : null}
       </View>
 

@@ -1,5 +1,12 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors, spacing } from '../theme';
@@ -9,6 +16,8 @@ interface ScreenProps {
   /** Scrollable content (default) vs fixed layout. */
   scroll?: boolean;
   padded?: boolean;
+  /** Wrap content in a KeyboardAvoidingView — use on form screens. */
+  keyboard?: boolean;
   style?: ViewStyle;
 }
 
@@ -17,21 +26,32 @@ export function Screen({
   children,
   scroll = true,
   padded = true,
+  keyboard = false,
   style,
 }: ScreenProps): React.JSX.Element {
   const contentStyle = [padded && styles.padded, style];
 
+  const body = scroll ? (
+    <ScrollView
+      contentContainerStyle={[styles.scrollContent, contentStyle]}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}>
+      {children}
+    </ScrollView>
+  ) : (
+    <View style={[styles.fixed, contentStyle]}>{children}</View>
+  );
+
   return (
     <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
-      {scroll ? (
-        <ScrollView
-          contentContainerStyle={[styles.scrollContent, contentStyle]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
-          {children}
-        </ScrollView>
+      {keyboard ? (
+        <KeyboardAvoidingView
+          style={styles.fixed}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          {body}
+        </KeyboardAvoidingView>
       ) : (
-        <View style={[styles.fixed, contentStyle]}>{children}</View>
+        body
       )}
     </SafeAreaView>
   );

@@ -8,15 +8,18 @@ import {
   Button,
   Card,
   Icon,
+  NotificationBell,
   jobStatusTone,
 } from '../../components';
 import { Screen } from '../../components';
+import { useCleanerDashboard } from '../../features/dashboard/hooks';
 import { useAcceptJob, useMyJobs, useOpenJobs } from '../../features/jobs/hooks';
 import { useAuthStore } from '../../store/authStore';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { CleanerStatus } from '../../types/enums';
 import type { Job } from '../../types/models';
 import { capitalize, displayName, formatMoney, formatUnixDate } from '../../utils/format';
+import { flattenPages } from '../../utils/query';
 
 export function CleanerHomeScreen(): React.JSX.Element {
   const navigation = useNavigation();
@@ -29,14 +32,14 @@ export function CleanerHomeScreen(): React.JSX.Element {
   const openJobs = useOpenJobs();
   const myJobs = useMyJobs();
   const acceptJob = useAcceptJob();
+  const dashboard = useCleanerDashboard();
 
-  const upcoming = (myJobs.data?.items ?? [])
+  const openJobItems = flattenPages(openJobs.data);
+  const upcoming = flattenPages(myJobs.data)
     .filter(job => job.status === 'ASSIGNED' || job.status === 'IN_PROGRESS')
     .slice(0, 2);
 
-  const earnings = (myJobs.data?.items ?? [])
-    .filter(job => job.status === 'COMPLETED')
-    .reduce((sum, job) => sum + job.budget, 0);
+  const earnings = dashboard.data?.total_earnings ?? 0;
 
   return (
     <Screen padded={false}>
@@ -46,7 +49,10 @@ export function CleanerHomeScreen(): React.JSX.Element {
           <Text style={typography.caption}>Welcome back,</Text>
           <Text style={typography.titleLg}>{user ? displayName(user) : ''}</Text>
         </View>
-        <Avatar name={user ? displayName(user) : '?'} uri={user?.profile_photo_url} size={44} />
+        <View style={styles.headerActions}>
+          <NotificationBell />
+          <Avatar name={user ? displayName(user) : '?'} uri={user?.profile_photo_url} size={44} />
+        </View>
       </View>
 
       {/* Approval status banner */}
@@ -123,7 +129,7 @@ export function CleanerHomeScreen(): React.JSX.Element {
         </Card>
       ) : openJobs.isPending ? (
         <Text style={styles.hint}>Finding jobs near you…</Text>
-      ) : (openJobs.data?.items.length ?? 0) === 0 ? (
+      ) : openJobItems.length === 0 ? (
         <Card style={styles.lockedCard}>
           <Icon name="time-outline" size={20} color={colors.ink400} />
           <Text style={styles.lockedText}>
@@ -132,7 +138,7 @@ export function CleanerHomeScreen(): React.JSX.Element {
         </Card>
       ) : (
         <View style={styles.jobList}>
-          {(openJobs.data?.items ?? []).slice(0, 4).map(job => (
+          {openJobItems.slice(0, 4).map(job => (
             <Card key={job.id} style={styles.jobCard}>
               <View style={styles.jobTop}>
                 <Text style={typography.title} numberOfLines={1}>
@@ -251,6 +257,11 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
   },
   headerText: { gap: spacing.xxs },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
   banner: {
     flexDirection: 'row',
     gap: spacing.md,

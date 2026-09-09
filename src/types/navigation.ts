@@ -7,6 +7,8 @@ export type AuthStackParamList = {
   ChooseRole: undefined;
   Login: undefined;
   SignUp: { role: 'CUSTOMER' | 'CLEANER' };
+  ForgotPassword: undefined;
+  ResetPassword: undefined;
 };
 
 // ---- Customer tabs ----------------------------------------------------------
@@ -23,6 +25,7 @@ export type CustomerTabParamList = {
 export type CleanerTabParamList = {
   CleanerHome: undefined;
   CleanerJobs: undefined;
+  CleanerListings: undefined;
   Profile: undefined;
 };
 
@@ -37,6 +40,10 @@ export type RootStackParamList = {
   CreateRequest: undefined;
   CleanerDetails: { listingId: string };
   BookingDetails: { kind: 'job' | 'listing-request'; id: string };
+  Notifications: undefined;
+  EditProfile: undefined;
+  ChangePassword: undefined;
+  VerifyEmail: undefined;
   Settings: undefined;
 };
 

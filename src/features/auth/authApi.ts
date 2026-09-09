@@ -38,4 +38,14 @@ export const authApi = {
   },
 
   logout: () => postData<unknown>(endpoints.auth.logout),
+
+  forgotPassword: (email: string) =>
+    postData<unknown>(endpoints.auth.forgotPassword, { email }),
+
+  resetPassword: (input: { otp: string; new_password: string }) =>
+    postData<unknown>(endpoints.auth.resetPassword, input),
+
+  verifyEmail: (otp: string) => postData<unknown>(endpoints.auth.verifyEmail, { otp }),
+
+  resendVerification: () => postData<unknown>(endpoints.auth.resendVerification),
 };

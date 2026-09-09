@@ -89,6 +89,39 @@ export function useRegisterCleaner() {
   });
 }
 
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: (email: string) => authApi.forgotPassword(email),
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: (input: { otp: string; new_password: string }) =>
+      authApi.resetPassword(input),
+  });
+}
+
+/** Verify email with the OTP, then refresh the session user. */
+export function useVerifyEmail() {
+  return useMutation({
+    mutationFn: (otp: string) => authApi.verifyEmail(otp),
+    onSuccess: async () => {
+      try {
+        useAuthStore.getState().setSession(await authApi.me());
+      } catch {
+        // Session user refresh is best-effort.
+      }
+    },
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: () => authApi.resendVerification(),
+  });
+}
+
 export function useLogout() {
   const queryClient = useQueryClient();
   const clearSession = useAuthStore(state => state.clearSession);

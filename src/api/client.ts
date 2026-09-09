@@ -10,6 +10,7 @@ import {
   ApiError,
   ApiErrorBody,
   Paginated,
+  flattenErrorMessage,
   normalizeMeta,
 } from './types';
 
@@ -85,9 +86,11 @@ apiClient.interceptors.response.use(
     }
 
     const message =
-      error.response?.data?.message ??
-      error.response?.data?.error?.message ??
-      (error.code === 'ECONNABORTED' ? 'Request timed out' : 'Network error');
+      flattenErrorMessage(error.response?.data?.message) ??
+      flattenErrorMessage(error.response?.data?.error?.message) ??
+      (error.code === 'ECONNABORTED'
+        ? 'Request timed out — please try again.'
+        : 'Network error — check your connection and try again.');
 
     throw new ApiError(status ?? 0, message);
   },

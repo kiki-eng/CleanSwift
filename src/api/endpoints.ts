@@ -12,10 +12,18 @@ export const endpoints = {
     me: '/auth/me',
     forgotPassword: '/auth/forgot-password',
     resetPassword: '/auth/reset-password',
+    changePassword: '/auth/change-password',
+    verifyEmail: '/auth/verify-email',
+    resendVerification: '/auth/resend-verification',
   },
   users: {
     me: '/users/me',
     preferences: '/users/me/preferences',
+    deactivate: '/users/me/deactivate',
+  },
+  dashboard: {
+    customer: '/dashboard/customer',
+    cleaner: '/dashboard/cleaner',
   },
   cleanerProfiles: {
     me: '/cleaner-profiles/me',

@@ -16,7 +16,7 @@ interface InputProps extends TextInputProps {
   icon?: string;
 }
 
-export function Input({ label, error, icon, ...inputProps }: InputProps): React.JSX.Element {
+export function Input({ label, error, icon, style, ...inputProps }: InputProps): React.JSX.Element {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -32,7 +32,7 @@ export function Input({ label, error, icon, ...inputProps }: InputProps): React.
           <Icon name={icon} size={18} color={focused ? colors.primary : colors.ink400} />
         ) : null}
         <TextInput
-          style={styles.input}
+          style={[styles.input, style]}
           placeholderTextColor={colors.ink400}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}

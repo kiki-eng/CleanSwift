@@ -32,8 +32,19 @@ export interface Paginated<T> {
 export interface ApiErrorBody {
   success: false;
   statusCode: number;
-  message: string;
-  error?: { message?: string };
+  /** NestJS validation errors send an array of messages. */
+  message: string | string[];
+  error?: { message?: string | string[] };
+}
+
+/** Flatten a backend error message (string or validation array) to one line. */
+export function flattenErrorMessage(
+  message: string | string[] | undefined,
+): string | undefined {
+  if (Array.isArray(message)) {
+    return message.join('\n');
+  }
+  return message;
 }
 
 export class ApiError extends Error {

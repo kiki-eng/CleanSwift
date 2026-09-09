@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Icon } from '../components';
 import { CleanerHomeScreen } from '../screens/cleaner/CleanerHomeScreen';
 import { CleanerJobsScreen } from '../screens/cleaner/CleanerJobsScreen';
+import { MyListingsScreen } from '../screens/cleaner/MyListingsScreen';
 import { ProfileScreen } from '../screens/shared/ProfileScreen';
 import { colors } from '../theme';
 import type { CleanerTabParamList } from '../types/navigation';
@@ -13,6 +14,7 @@ const Tab = createBottomTabNavigator<CleanerTabParamList>();
 const icons: Record<keyof CleanerTabParamList, { active: string; inactive: string }> = {
   CleanerHome: { active: 'home', inactive: 'home-outline' },
   CleanerJobs: { active: 'briefcase', inactive: 'briefcase-outline' },
+  CleanerListings: { active: 'pricetags', inactive: 'pricetags-outline' },
   Profile: { active: 'person', inactive: 'person-outline' },
 };
 
@@ -42,6 +44,11 @@ export function CleanerTabs(): React.JSX.Element {
       })}>
       <Tab.Screen name="CleanerHome" component={CleanerHomeScreen} options={{ title: 'Home' }} />
       <Tab.Screen name="CleanerJobs" component={CleanerJobsScreen} options={{ title: 'Jobs' }} />
+      <Tab.Screen
+        name="CleanerListings"
+        component={MyListingsScreen}
+        options={{ title: 'Listings' }}
+      />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
     </Tab.Navigator>
   );

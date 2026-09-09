@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   Icon,
+  NotificationBell,
   Rating,
   jobStatusTone,
 } from '../../components';
@@ -18,6 +19,7 @@ import { useAuthStore } from '../../store/authStore';
 import { colors, radii, shadows, spacing, typography } from '../../theme';
 import type { CleanerListing } from '../../types/models';
 import { capitalize, displayName, formatMoney, formatUnixDate } from '../../utils/format';
+import { flattenPages } from '../../utils/query';
 
 export function CustomerHomeScreen(): React.JSX.Element {
   const navigation = useNavigation();
@@ -26,7 +28,8 @@ export function CustomerHomeScreen(): React.JSX.Element {
   const listings = useActiveListings();
   const postings = useMyPostings();
 
-  const upcoming = (postings.data?.items ?? [])
+  const listingItems = flattenPages(listings.data).slice(0, 10);
+  const upcoming = flattenPages(postings.data)
     .filter(job => job.status === 'OPEN' || job.status === 'ASSIGNED' || job.status === 'IN_PROGRESS')
     .slice(0, 3);
 
@@ -38,7 +41,10 @@ export function CustomerHomeScreen(): React.JSX.Element {
           <Text style={typography.caption}>Good {timeOfDay()},</Text>
           <Text style={typography.titleLg}>{user ? displayName(user) : 'there'} 👋</Text>
         </View>
-        <Avatar name={user ? displayName(user) : '?'} uri={user?.profile_photo_url} size={44} />
+        <View style={styles.headerActions}>
+          <NotificationBell />
+          <Avatar name={user ? displayName(user) : '?'} uri={user?.profile_photo_url} size={44} />
+        </View>
       </View>
 
       {/* Hero booking card */}
@@ -70,10 +76,10 @@ export function CustomerHomeScreen(): React.JSX.Element {
       />
       {listings.isPending ? (
         <Text style={styles.sectionHint}>Loading cleaners…</Text>
-      ) : listings.data && listings.data.items.length > 0 ? (
+      ) : listingItems.length > 0 ? (
         <FlatList
           horizontal
-          data={listings.data.items}
+          data={listingItems}
           keyExtractor={item => item.id}
           renderItem={({ item }) => <ListingCard listing={item} />}
           contentContainerStyle={styles.listingRow}
@@ -196,6 +202,11 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
   },
   headerText: { gap: spacing.xxs },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
   section: { paddingHorizontal: spacing.xl },
   hero: {
     flexDirection: 'row',
