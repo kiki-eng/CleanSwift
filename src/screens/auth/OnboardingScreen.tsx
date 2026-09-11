@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Button, Icon, Screen } from '../../components';
+import { BrandLogo, Button, Icon, Screen } from '../../components';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { AuthStackParamList } from '../../types/navigation';
 
@@ -33,9 +33,7 @@ export function OnboardingScreen(): React.JSX.Element {
   return (
     <Screen>
       <View style={styles.hero}>
-        <View style={styles.logoCircle}>
-          <Icon name="sparkles" size={32} color={colors.primary} />
-        </View>
+        <BrandLogo size={96} style={styles.logo} />
         <Text style={styles.title}>Welcome to CleanSwift</Text>
         <Text style={styles.subtitle}>
           The easiest way to book trusted cleaners — or earn money cleaning.
@@ -74,15 +72,7 @@ const styles = StyleSheet.create({
     paddingTop: spacing.huge,
     paddingBottom: spacing.xxl,
   },
-  logoCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: radii.pill,
-    backgroundColor: colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xl,
-  },
+  logo: { marginBottom: spacing.xl },
   title: {
     ...typography.display,
     textAlign: 'center',

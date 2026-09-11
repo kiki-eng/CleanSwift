@@ -1,3 +1,4 @@
+export { BrandLogo } from './BrandLogo';
 export { Avatar } from './Avatar';
 export { Badge, jobStatusTone, requestStatusTone } from './Badge';
 export { BottomSheet } from './BottomSheet';

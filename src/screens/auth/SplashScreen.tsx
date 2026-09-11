@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { Icon } from '../../components';
+import { BrandLogo } from '../../components';
 import { useBootstrapSession } from '../../features/auth/hooks';
 import { colors, spacing, typography } from '../../theme';
 
@@ -15,9 +15,7 @@ export function SplashScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View style={styles.logoCircle}>
-        <Icon name="sparkles" size={40} color={colors.white} />
-      </View>
+      <BrandLogo size={96} style={styles.logo} />
       <Text style={styles.brand}>CleanSwift</Text>
       <Text style={styles.tagline}>Sparkling homes, on demand</Text>
     </View>
@@ -31,15 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xl,
-  },
+  logo: { marginBottom: spacing.xl },
   brand: {
     ...typography.displayLg,
     color: colors.white,
