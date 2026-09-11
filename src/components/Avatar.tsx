@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-import { colors } from '../theme';
+import { colors, fontFamily } from '../theme';
 import { initials } from '../utils/format';
 
 interface AvatarProps {
@@ -33,6 +33,6 @@ const styles = StyleSheet.create({
   },
   initials: {
     color: colors.primaryDark,
-    fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
   },
 });

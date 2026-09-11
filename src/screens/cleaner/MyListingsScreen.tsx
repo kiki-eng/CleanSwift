@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
   Badge,
@@ -21,7 +21,9 @@ import {
   useMyCleanerProfile,
   useUpdateListing,
 } from '../../features/listings/hooks';
-import { colors, spacing, typography } from '../../theme';
+import { useImageUpload } from '../../features/upload/hooks';
+import { confirmAction } from '../../store/confirmStore';
+import { colors, radii, spacing, typography } from '../../theme';
 import type { ListingStatus } from '../../types/enums';
 import type { CleanerListing } from '../../types/models';
 import { capitalize, formatMoney } from '../../utils/format';
@@ -40,19 +42,20 @@ export function MyListingsScreen(): React.JSX.Element {
   const isApproved = profile.data?.status === 'APPROVED';
   const listings = profile.data?.listings ?? [];
 
-  const handleDelete = (listing: CleanerListing): void => {
-    Alert.alert('Delete listing?', `"${listing.title}" will be removed permanently.`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => deleteListing.mutate(listing.id),
-      },
-    ]);
+  const handleDelete = async (listing: CleanerListing): Promise<void> => {
+    const confirmed = await confirmAction({
+      title: 'Delete listing?',
+      message: `"${listing.title}" will be removed permanently.`,
+      confirmLabel: 'Delete',
+      destructive: true,
+    });
+    if (confirmed) {
+      deleteListing.mutate(listing.id);
+    }
   };
 
   return (
-    <Screen scroll={false} padded={false}>
+    <Screen scroll={false} padded={false} tabScreen>
       <View style={styles.header}>
         <View style={styles.headerRow}>
           <Text style={typography.display}>My listings</Text>
@@ -92,6 +95,9 @@ export function MyListingsScreen(): React.JSX.Element {
           onRefresh={() => profile.refetch()}
           renderItem={({ item }) => (
             <Card style={styles.card}>
+              {item.image_url ? (
+                <Image source={{ uri: item.image_url }} style={styles.listingImage} />
+              ) : null}
               <View style={styles.cardTop}>
                 <Text style={typography.title} numberOfLines={1}>
                   {item.title}
@@ -159,11 +165,13 @@ function ListingEditorSheet({ target, onClose }: ListingEditorSheetProps): React
   const createListing = useCreateListing();
   const updateListing = useUpdateListing();
   const mutation = isNew ? createListing : updateListing;
+  const imageUpload = useImageUpload();
 
   const [title, setTitle] = useState(listing?.title ?? '');
   const [description, setDescription] = useState(listing?.description ?? '');
   const [price, setPrice] = useState(listing ? String(listing.price) : '');
   const [status, setStatus] = useState<ListingStatus>(listing?.status ?? 'ACTIVE');
+  const [imageUrl, setImageUrl] = useState(listing?.image_url ?? undefined);
   const [submitted, setSubmitted] = useState(false);
 
   // Re-seed the form each time the sheet opens for a different target.
@@ -174,6 +182,7 @@ function ListingEditorSheet({ target, onClose }: ListingEditorSheetProps): React
     setDescription(listing?.description ?? '');
     setPrice(listing ? String(listing.price) : '');
     setStatus(listing?.status ?? 'ACTIVE');
+    setImageUrl(listing?.image_url ?? undefined);
     setSubmitted(false);
     createListing.reset();
     updateListing.reset();
@@ -187,6 +196,13 @@ function ListingEditorSheet({ target, onClose }: ListingEditorSheetProps): React
   };
   const hasErrors = Object.values(errors).some(Boolean);
 
+  const handlePickImage = async (): Promise<void> => {
+    const url = await imageUpload.pickImage();
+    if (url) {
+      setImageUrl(url);
+    }
+  };
+
   const handleSubmit = (): void => {
     setSubmitted(true);
     if (hasErrors || mutation.isPending) {
@@ -197,6 +213,7 @@ function ListingEditorSheet({ target, onClose }: ListingEditorSheetProps): React
       description: description.trim(),
       price: priceValue,
       status,
+      ...(imageUrl ? { image_url: imageUrl } : {}),
     };
     if (isNew) {
       createListing.mutate(body, { onSuccess: onClose });
@@ -210,6 +227,24 @@ function ListingEditorSheet({ target, onClose }: ListingEditorSheetProps): React
       visible={target !== null}
       onClose={onClose}
       title={isNew ? 'New listing' : 'Edit listing'}>
+      <Text style={styles.fieldLabel}>Photo (optional)</Text>
+      <Pressable
+        onPress={handlePickImage}
+        disabled={imageUpload.uploading}
+        style={styles.imagePicker}>
+        {imageUrl ? (
+          <Image source={{ uri: imageUrl }} style={styles.imagePreview} />
+        ) : imageUpload.uploading ? (
+          <ActivityIndicator color={colors.primary} />
+        ) : (
+          <>
+            <Icon name="camera-outline" size={22} color={colors.ink400} />
+            <Text style={styles.imagePickerText}>Add a photo</Text>
+          </>
+        )}
+      </Pressable>
+      {imageUpload.error ? <Text style={styles.errorText}>{imageUpload.error}</Text> : null}
+
       <Input
         label="Title"
         value={title}
@@ -267,6 +302,12 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   card: { gap: spacing.sm },
+  listingImage: {
+    width: '100%',
+    height: 140,
+    borderRadius: radii.md,
+    backgroundColor: colors.ink100,
+  },
   cardTop: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -293,4 +334,24 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   multiline: { minHeight: 88, textAlignVertical: 'top' },
+  fieldLabel: {
+    ...typography.bodyMedium,
+    color: colors.ink700,
+    marginBottom: spacing.xs + 2,
+  },
+  imagePicker: {
+    height: 140,
+    borderRadius: radii.md,
+    borderWidth: 1.5,
+    borderColor: colors.ink200,
+    borderStyle: 'dashed',
+    backgroundColor: colors.ink50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.lg,
+    overflow: 'hidden',
+  },
+  imagePickerText: { ...typography.body, color: colors.ink500 },
+  imagePreview: { width: '100%', height: '100%' },
 });

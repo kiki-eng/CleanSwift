@@ -4,12 +4,14 @@ import {
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, radii, spacing, typography } from '../theme';
+import { colors, radii, shadows, spacing, typography } from '../theme';
 import { Icon } from './Icon';
 
 interface BottomSheetProps {
@@ -29,21 +31,30 @@ export function BottomSheet({
   title,
   children,
 }: BottomSheetProps): React.JSX.Element {
+  const insets = useSafeAreaInsets();
+
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <KeyboardAvoidingView
         style={styles.root}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <Pressable style={styles.backdrop} onPress={onClose} />
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Close" />
         <View style={styles.sheet}>
           <View style={styles.handle} />
           <View style={styles.header}>
             {title ? <Text style={typography.titleLg}>{title}</Text> : <View />}
-            <Pressable onPress={onClose} hitSlop={8}>
-              <Icon name="close" size={24} color={colors.ink500} />
+            <Pressable onPress={onClose} hitSlop={8} style={styles.closeButton}>
+              <Icon name="close" size={20} color={colors.ink700} />
             </Pressable>
           </View>
-          {children}
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingBottom: Math.max(insets.bottom, spacing.xl),
+            }}>
+            {children}
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -65,12 +76,12 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: radii.xl,
     borderTopRightRadius: radii.xl,
     paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.huge,
-    maxHeight: '88%',
+    maxHeight: '90%',
+    ...shadows.raised,
   },
   handle: {
     alignSelf: 'center',
-    width: 40,
+    width: 36,
     height: 4,
     borderRadius: 2,
     backgroundColor: colors.ink300,
@@ -81,5 +92,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: spacing.lg,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: radii.pill,
+    backgroundColor: colors.ink100,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

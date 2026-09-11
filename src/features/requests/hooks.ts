@@ -16,6 +16,7 @@ export interface CreateListingRequestInput {
   address: string;
   requested_date: string;
   additional_notes?: string;
+  image_url?: string;
 }
 
 export const requestKeys = {

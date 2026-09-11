@@ -2,9 +2,11 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { BecomeCleanerScreen } from '../screens/customer/BecomeCleanerScreen';
 import { BookingDetailsScreen } from '../screens/customer/BookingDetailsScreen';
 import { CleanerDetailsScreen } from '../screens/customer/CleanerDetailsScreen';
 import { CreateRequestScreen } from '../screens/customer/CreateRequestScreen';
+import { CleanerProfileEditScreen } from '../screens/cleaner/CleanerProfileEditScreen';
 import { ChangePasswordScreen } from '../screens/shared/ChangePasswordScreen';
 import { EditProfileScreen } from '../screens/shared/EditProfileScreen';
 import { NotificationsScreen } from '../screens/shared/NotificationsScreen';
@@ -29,6 +31,7 @@ export function RootNavigator(): React.JSX.Element {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
+          headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: colors.background },
         }}>
         {status === 'loading' ? (
@@ -81,6 +84,16 @@ export function RootNavigator(): React.JSX.Element {
               name="Settings"
               component={SettingsScreen}
               options={{ headerShown: true, title: 'Settings' }}
+            />
+            <Stack.Screen
+              name="BecomeCleaner"
+              component={BecomeCleanerScreen}
+              options={{ headerShown: true, title: 'Become a Cleaner' }}
+            />
+            <Stack.Screen
+              name="CleanerProfileEdit"
+              component={CleanerProfileEditScreen}
+              options={{ headerShown: true, title: 'Business Profile' }}
             />
           </>
         )}

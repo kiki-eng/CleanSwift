@@ -34,7 +34,7 @@ export function CustomerHomeScreen(): React.JSX.Element {
     .slice(0, 3);
 
   return (
-    <Screen padded={false}>
+    <Screen padded={false} tabScreen>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerText}>
@@ -58,6 +58,7 @@ export function CustomerHomeScreen(): React.JSX.Element {
             <Button
               title="Book a Cleaning"
               size="md"
+              variant="secondary"
               onPress={() => navigation.navigate('CreateRequest')}
               style={styles.heroButton}
             />

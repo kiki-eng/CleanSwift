@@ -3,6 +3,7 @@ export { Badge, jobStatusTone, requestStatusTone } from './Badge';
 export { BottomSheet } from './BottomSheet';
 export { Button } from './Button';
 export { Card } from './Card';
+export { ConfirmDialogHost } from './ConfirmDialog';
 export { ChipGroup } from './ChipGroup';
 export { EmptyState, ErrorState, LoadingState } from './States';
 export { Icon } from './Icon';

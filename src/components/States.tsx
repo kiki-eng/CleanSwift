@@ -1,9 +1,21 @@
-import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { ActivityIndicator, Animated, StyleSheet, Text, View } from 'react-native';
 
 import { colors, spacing, typography } from '../theme';
 import { Button } from './Button';
 import { Icon } from './Icon';
+
+/** Soft fade + rise-in used for empty/error states so they don't just pop in. */
+function useEnterAnimation() {
+  const progress = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(progress, { toValue: 1, duration: 260, useNativeDriver: true }).start();
+  }, [progress]);
+  return {
+    opacity: progress,
+    transform: [{ translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }) }],
+  };
+}
 
 // ---- Empty ------------------------------------------------------------------
 
@@ -22,8 +34,9 @@ export function EmptyState({
   actionTitle,
   onAction,
 }: EmptyStateProps): React.JSX.Element {
+  const animatedStyle = useEnterAnimation();
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, animatedStyle]}>
       <View style={styles.iconCircle}>
         <Icon name={icon} size={28} color={colors.primary} />
       </View>
@@ -32,7 +45,7 @@ export function EmptyState({
       {actionTitle && onAction ? (
         <Button title={actionTitle} onPress={onAction} size="md" style={styles.action} />
       ) : null}
-    </View>
+    </Animated.View>
   );
 }
 
@@ -44,8 +57,9 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({ message, onRetry }: ErrorStateProps): React.JSX.Element {
+  const animatedStyle = useEnterAnimation();
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, animatedStyle]}>
       <View style={[styles.iconCircle, styles.errorCircle]}>
         <Icon name="alert-circle-outline" size={28} color={colors.danger} />
       </View>
@@ -54,7 +68,7 @@ export function ErrorState({ message, onRetry }: ErrorStateProps): React.JSX.Ele
       {onRetry ? (
         <Button title="Try Again" onPress={onRetry} variant="secondary" size="md" style={styles.action} />
       ) : null}
-    </View>
+    </Animated.View>
   );
 }
 

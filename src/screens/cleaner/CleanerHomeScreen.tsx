@@ -42,7 +42,7 @@ export function CleanerHomeScreen(): React.JSX.Element {
   const earnings = dashboard.data?.total_earnings ?? 0;
 
   return (
-    <Screen padded={false}>
+    <Screen padded={false} tabScreen>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerText}>

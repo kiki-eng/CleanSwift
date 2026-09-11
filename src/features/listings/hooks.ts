@@ -11,6 +11,16 @@ export interface ListingInput {
   description: string;
   price: number;
   status?: ListingStatus;
+  image_url?: string;
+}
+
+export interface UpdateCleanerProfileInput {
+  is_individual?: boolean;
+  company_name?: string;
+  cleaning_experience?: string;
+  hourly_rate?: number;
+  service_areas?: string[];
+  specialties?: string[];
 }
 
 export const listingKeys = {
@@ -65,5 +75,19 @@ export function useDeleteListing() {
   return useMutation({
     mutationFn: (id: string) => deleteData(endpoints.listings.byId(id)),
     onSuccess: invalidate,
+  });
+}
+
+/** Cleaner: update my business profile (rate, service areas, specialties, bio). */
+export function useUpdateCleanerProfile() {
+  const setCleanerProfile = useAuthStore(state => state.setCleanerProfile);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: UpdateCleanerProfileInput) =>
+      patchData<CleanerProfile>(endpoints.cleanerProfiles.me, input),
+    onSuccess: profile => {
+      setCleanerProfile(profile);
+      queryClient.invalidateQueries({ queryKey: listingKeys.myProfile });
+    },
   });
 }

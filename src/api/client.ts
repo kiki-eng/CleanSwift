@@ -132,3 +132,20 @@ export async function patchData<T>(url: string, body?: unknown): Promise<T> {
 export async function deleteData(url: string): Promise<void> {
   await apiClient.delete(url);
 }
+
+export interface UploadableFile {
+  uri: string;
+  name: string;
+  type: string;
+}
+
+/** Multipart upload. The backend returns the public URL to store on the record. */
+export async function uploadFile(url: string, file: UploadableFile): Promise<{ url: string }> {
+  const formData = new FormData();
+  // React Native's FormData accepts this shape for file parts; the DOM lib types don't model it.
+  formData.append('file', file as unknown as Blob);
+  const response = await apiClient.post<ApiEnvelope<{ url: string }>>(url, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data.data;
+}

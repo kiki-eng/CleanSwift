@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { colors, radii, spacing, typography } from '../theme';
 import type { JobStatus, ListingRequestStatus } from '../types/enums';
@@ -9,12 +9,13 @@ type Tone = 'neutral' | 'success' | 'warning' | 'danger' | 'info' | 'brand';
 interface BadgeProps {
   label: string;
   tone?: Tone;
+  style?: ViewStyle;
 }
 
-export function Badge({ label, tone = 'neutral' }: BadgeProps): React.JSX.Element {
+export function Badge({ label, tone = 'neutral', style }: BadgeProps): React.JSX.Element {
   const palette = tones[tone];
   return (
-    <View style={[styles.badge, { backgroundColor: palette.bg }]}>
+    <View style={[styles.badge, { backgroundColor: palette.bg }, style]}>
       <Text style={[styles.label, { color: palette.fg }]}>{label}</Text>
     </View>
   );

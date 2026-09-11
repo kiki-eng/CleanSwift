@@ -9,7 +9,6 @@ import {
   Input,
   Screen,
 } from '../../components';
-import { env } from '../../config/env';
 import {
   useDeactivateAccount,
   usePreferences,
@@ -72,15 +71,8 @@ export function SettingsScreen(): React.JSX.Element {
         <Text style={styles.sectionTitle}>About</Text>
         <Card style={styles.row}>
           <Icon name="code-slash-outline" size={20} />
-          <Text style={styles.rowLabel}>Version</Text>
+          <Text style={styles.aboutLabel}>Version</Text>
           <Text style={typography.caption}>1.0.0</Text>
-        </Card>
-        <Card style={styles.row}>
-          <Icon name="server-outline" size={20} />
-          <Text style={styles.rowLabel}>API</Text>
-          <Text style={typography.caption} numberOfLines={1}>
-            {env.API_BASE_URL.replace('https://', '')}
-          </Text>
         </Card>
       </View>
 
@@ -160,6 +152,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   rowLabel: { ...typography.bodyLg, flex: 1 },
+  aboutLabel: { ...typography.bodyLg, flexShrink: 0 },
   errorText: {
     ...typography.body,
     color: colors.danger,

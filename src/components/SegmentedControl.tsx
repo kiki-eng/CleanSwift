@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { colors, radii, spacing, typography } from '../theme';
+import { colors, radii, shadows, spacing, typography } from '../theme';
 
 export interface SegmentOption<T extends string> {
   value: T;
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm + 2,
     borderRadius: radii.sm,
   },
-  optionSelected: { backgroundColor: colors.white },
+  optionSelected: { backgroundColor: colors.white, ...shadows.subtle },
   label: { ...typography.bodyMedium, color: colors.ink500 },
   labelSelected: { color: colors.ink900 },
 });

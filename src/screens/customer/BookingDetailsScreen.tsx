@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 
 import {
@@ -33,7 +33,8 @@ import {
 import { useListingRequest, useUpdateRequestStatus } from '../../features/requests/hooks';
 import { useReviewJob, useReviewListingRequest } from '../../features/reviews/hooks';
 import { useAuthStore } from '../../store/authStore';
-import { colors, spacing, typography } from '../../theme';
+import { confirmAction } from '../../store/confirmStore';
+import { colors, radii, spacing, typography } from '../../theme';
 import type { Job, JobApplication, ListingRequest, User } from '../../types/models';
 import {
   capitalize,
@@ -83,11 +84,19 @@ function PersonCard({ title, user }: { title: string; user: User }) {
   );
 }
 
-function confirm(title: string, message: string, onConfirm: () => void): void {
-  Alert.alert(title, message, [
-    { text: 'No', style: 'cancel' },
-    { text: 'Yes', style: 'destructive', onPress: onConfirm },
-  ]);
+function confirm(
+  title: string,
+  message: string,
+  onConfirm: () => void,
+  destructive = true,
+): void {
+  confirmAction({ title, message, destructive, confirmLabel: 'Yes', cancelLabel: 'No' }).then(
+    confirmed => {
+      if (confirmed) {
+        onConfirm();
+      }
+    },
+  );
 }
 
 // ---- Job details ------------------------------------------------------------
@@ -231,8 +240,11 @@ function JobDetailsBody({ job }: { job: Job }): React.JSX.Element {
             title="Mark as Completed"
             loading={completeJob.isPending}
             onPress={() =>
-              confirm('Complete job?', 'Confirm the work is finished.', () =>
-                completeJob.mutate(job.id),
+              confirm(
+                'Complete job?',
+                'Confirm the work is finished.',
+                () => completeJob.mutate(job.id),
+                false,
               )
             }
           />
@@ -290,8 +302,11 @@ function ApplicationsSection({ job }: { job: Job }): React.JSX.Element {
                 acceptApplication.isPending && acceptApplication.variables === application.id
               }
               onAccept={() =>
-                confirm('Accept this cleaner?', 'They will be assigned to your job.', () =>
-                  acceptApplication.mutate(application.id),
+                confirm(
+                  'Accept this cleaner?',
+                  'They will be assigned to your job.',
+                  () => acceptApplication.mutate(application.id),
+                  false,
                 )
               }
             />
@@ -466,6 +481,13 @@ function RequestDetailsBody({ request }: { request: ListingRequest }): React.JSX
         </View>
       ) : null}
 
+      {request.image_url ? (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Photo</Text>
+          <Image source={{ uri: request.image_url }} style={styles.requestImage} />
+        </View>
+      ) : null}
+
       {!isCustomer && request.customer ? (
         <PersonCard title="Customer" user={request.customer} />
       ) : null}
@@ -527,8 +549,11 @@ function RequestDetailsBody({ request }: { request: ListingRequest }): React.JSX
             title="Mark as Completed"
             loading={updateStatus.isPending}
             onPress={() =>
-              confirm('Complete job?', 'Confirm the work is finished.', () =>
-                setStatus('COMPLETED'),
+              confirm(
+                'Complete job?',
+                'Confirm the work is finished.',
+                () => setStatus('COMPLETED'),
+                false,
               )
             }
           />
@@ -588,6 +613,12 @@ const styles = StyleSheet.create({
   },
   detailValue: { ...typography.bodyMedium, flex: 1 },
   description: { ...typography.body, color: colors.ink700 },
+  requestImage: {
+    width: '100%',
+    height: 180,
+    borderRadius: radii.lg,
+    backgroundColor: colors.ink100,
+  },
   chipWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',

@@ -45,6 +45,8 @@ export type RootStackParamList = {
   ChangePassword: undefined;
   VerifyEmail: undefined;
   Settings: undefined;
+  BecomeCleaner: undefined;
+  CleanerProfileEdit: undefined;
 };
 
 declare global {

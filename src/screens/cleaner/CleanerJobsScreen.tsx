@@ -36,7 +36,7 @@ export function CleanerJobsScreen(): React.JSX.Element {
   const isApproved = profile?.status === 'APPROVED';
 
   return (
-    <Screen scroll={false} padded={false}>
+    <Screen scroll={false} padded={false} tabScreen>
       <View style={styles.header}>
         <Text style={typography.display}>Jobs</Text>
         <SegmentedControl options={SEGMENTS} value={segment} onChange={setSegment} />

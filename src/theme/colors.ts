@@ -1,30 +1,36 @@
 /**
- * CleanSwift palette — teal-forward, trustworthy, premium but approachable.
+ * CleanSwift palette — a deep, confident teal paired with warm stone
+ * neutrals (rather than cold blue-grays) for a premium but human,
+ * home-services feel. Every existing token name is preserved so this
+ * file is a drop-in refinement, not a breaking change.
  */
 export const colors = {
   // Brand
-  primary: '#0E8A72',
-  primaryDark: '#0A6B58',
-  primaryLight: '#E6F4F1',
+  primary: '#0D9488',
+  primaryDark: '#0F766E',
+  primaryDarker: '#134E4A',
+  primaryLight: '#CCFBF1',
+  primaryTint: '#F0FDFA',
 
-  // Accent (warm sand for highlights, ratings)
-  accent: '#F4A63B',
-  accentLight: '#FDF3E3',
+  // Accent (warm amber for ratings/highlights)
+  accent: '#F59E0B',
+  accentLight: '#FEF3C7',
 
-  // Neutrals (ink scale)
-  ink900: '#101828',
-  ink700: '#344054',
-  ink500: '#667085',
-  ink400: '#98A2B3',
-  ink300: '#D0D5DD',
-  ink200: '#EAECF0',
-  ink100: '#F2F4F7',
-  ink50: '#F9FAFB',
+  // Neutrals (warm "ink" scale)
+  ink900: '#1C1917',
+  ink800: '#292524',
+  ink700: '#44403C',
+  ink500: '#78716C',
+  ink400: '#A8A29E',
+  ink300: '#D6D3D1',
+  ink200: '#E7E5E4',
+  ink100: '#F5F5F4',
+  ink50: '#FAFAF9',
 
   // Surfaces
-  background: '#FFFFFF',
+  background: '#FBFBFA',
   surface: '#FFFFFF',
-  surfaceSubtle: '#F7F9F9',
+  surfaceSubtle: '#F7F6F4',
 
   // Semantic
   success: '#12B76A',
@@ -37,7 +43,7 @@ export const colors = {
   infoLight: '#EAF3FE',
 
   white: '#FFFFFF',
-  overlay: 'rgba(16, 24, 40, 0.5)',
+  overlay: 'rgba(28, 25, 23, 0.55)',
 } as const;
 
 export type AppColor = keyof typeof colors;

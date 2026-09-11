@@ -24,7 +24,7 @@ export function LoginScreen(): React.JSX.Element {
   };
 
   return (
-    <Screen>
+    <Screen keyboard>
       <View style={styles.header}>
         <Text style={typography.display}>Welcome back</Text>
         <Text style={styles.subtitle}>Log in to continue.</Text>

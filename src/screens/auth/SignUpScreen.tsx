@@ -62,7 +62,7 @@ export function SignUpScreen(): React.JSX.Element {
   };
 
   return (
-    <Screen>
+    <Screen keyboard>
       <View style={styles.header}>
         <Text style={typography.display}>
           {isCleaner ? 'Start earning' : 'Create your account'}

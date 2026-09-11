@@ -41,7 +41,7 @@ export function CleanerSearchScreen(): React.JSX.Element {
   }, [listings.data, search]);
 
   return (
-    <Screen scroll={false} padded={false}>
+    <Screen scroll={false} padded={false} tabScreen>
       <View style={styles.header}>
         <Text style={typography.display}>Find cleaners</Text>
         <Input

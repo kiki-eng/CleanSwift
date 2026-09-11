@@ -44,7 +44,7 @@ export function CustomerBookingsScreen(): React.JSX.Element {
   const [requestStatus, setRequestStatus] = useState<ListingRequestStatus | undefined>(undefined);
 
   return (
-    <Screen scroll={false} padded={false}>
+    <Screen scroll={false} padded={false} tabScreen>
       <View style={styles.header}>
         <Text style={typography.display}>Bookings</Text>
         <SegmentedControl options={SEGMENTS} value={segment} onChange={setSegment} />

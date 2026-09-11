@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   ActivityIndicator,
+  Animated,
   Pressable,
   StyleSheet,
   Text,
   ViewStyle,
 } from 'react-native';
 
-import { colors, radii, spacing, typography } from '../theme';
+import { colors, radii, shadows, spacing, typography } from '../theme';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'lg' | 'md' | 'sm';
@@ -32,27 +33,46 @@ export function Button({
   style,
 }: ButtonProps): React.JSX.Element {
   const isDisabled = disabled || loading;
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const animateTo = (value: number): void => {
+    Animated.spring(scale, {
+      toValue: value,
+      useNativeDriver: true,
+      speed: 40,
+      bounciness: 6,
+    }).start();
+  };
 
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={isDisabled}
-      style={({ pressed }) => [
-        styles.base,
-        sizeStyles[size],
-        variantStyles[variant],
-        pressed && styles.pressed,
-        isDisabled && styles.disabled,
-        style,
-      ]}>
-      {loading ? (
-        <ActivityIndicator color={variant === 'primary' || variant === 'danger' ? colors.white : colors.primary} />
-      ) : (
-        <Text style={[size === 'sm' ? typography.buttonSm : typography.button, textStyles[variant]]}>
-          {title}
-        </Text>
-      )}
-    </Pressable>
+    <Animated.View style={[{ transform: [{ scale }] }, variant === 'primary' && !isDisabled && shadows.subtle]}>
+      <Pressable
+        onPress={onPress}
+        disabled={isDisabled}
+        onPressIn={() => animateTo(0.97)}
+        onPressOut={() => animateTo(1)}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: isDisabled }}
+        style={[
+          styles.base,
+          sizeStyles[size],
+          variantStyles[variant],
+          isDisabled && styles.disabled,
+          style,
+        ]}>
+        {loading ? (
+          <ActivityIndicator
+            color={variant === 'primary' || variant === 'danger' ? colors.white : colors.primary}
+          />
+        ) : (
+          <Text
+            style={[size === 'sm' ? typography.buttonSm : typography.button, textStyles[variant]]}
+            numberOfLines={1}>
+            {title}
+          </Text>
+        )}
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -63,8 +83,7 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     flexDirection: 'row',
   },
-  pressed: { opacity: 0.85 },
-  disabled: { opacity: 0.5 },
+  disabled: { opacity: 0.45 },
 });
 
 const sizeStyles: Record<Size, ViewStyle> = {

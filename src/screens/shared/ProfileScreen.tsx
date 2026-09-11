@@ -4,8 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 
 import { Avatar, Badge, Button, Card, Icon, Rating, Screen } from '../../components';
 import { useLogout } from '../../features/auth/hooks';
+import { confirmAction } from '../../store/confirmStore';
 import { useAuthStore } from '../../store/authStore';
-import { colors, spacing, typography } from '../../theme';
+import type { CleanerStatus } from '../../types/enums';
+import { colors, radii, spacing, typography } from '../../theme';
 import { capitalize, displayName } from '../../utils/format';
 
 export function ProfileScreen(): React.JSX.Element {
@@ -15,19 +17,30 @@ export function ProfileScreen(): React.JSX.Element {
   const logout = useLogout();
 
   if (!user) {
-    return <Screen scroll={false}>{null}</Screen>;
+    return (
+      <Screen scroll={false} tabScreen>
+        {null}
+      </Screen>
+    );
   }
 
+  // A CUSTOMER who has applied to clean has a cleanerProfile but keeps the
+  // CUSTOMER role until an admin approves it — show application status
+  // instead of stats that don't apply yet (0 jobs, no rating).
+  const applicationPending = user.role === 'CUSTOMER' && Boolean(profile);
+
   return (
-    <Screen>
+    <Screen tabScreen>
       <View style={styles.header}>
         <Avatar name={displayName(user)} uri={user.profile_photo_url} size={80} />
         <Text style={styles.name}>{displayName(user)}</Text>
         <Text style={styles.email}>{user.email}</Text>
-        <Badge label={capitalize(user.role)} tone="brand" />
+        <Badge label={capitalize(user.role)} tone="brand" style={styles.roleBadge} />
       </View>
 
-      {profile ? (
+      {applicationPending && profile ? (
+        <CleanerApplicationStatus status={profile.status} />
+      ) : profile ? (
         <Card style={styles.statsCard}>
           <View style={styles.statsRow}>
             <Rating value={profile.average_rating ?? 0} reviewCount={profile.total_reviews ?? 0} />
@@ -49,6 +62,13 @@ export function ProfileScreen(): React.JSX.Element {
           label="Edit profile"
           onPress={() => navigation.navigate('EditProfile')}
         />
+        {user.role === 'CLEANER' ? (
+          <ProfileRow
+            icon="briefcase-outline"
+            label="Business profile"
+            onPress={() => navigation.navigate('CleanerProfileEdit')}
+          />
+        ) : null}
         <ProfileRow
           icon="key-outline"
           label="Change password"
@@ -59,6 +79,13 @@ export function ProfileScreen(): React.JSX.Element {
           label="Settings"
           onPress={() => navigation.navigate('Settings')}
         />
+        {user.role === 'CUSTOMER' && !applicationPending ? (
+          <ProfileRow
+            icon="sparkles-outline"
+            label="Become a cleaner"
+            onPress={() => navigation.navigate('BecomeCleaner')}
+          />
+        ) : null}
         {user.email_verified === false ? (
           <ProfileRow
             icon="alert-circle-outline"
@@ -78,11 +105,58 @@ export function ProfileScreen(): React.JSX.Element {
       <Button
         title="Log Out"
         variant="danger"
-        onPress={() => logout.mutate()}
+        onPress={async () => {
+          const confirmed = await confirmAction({
+            title: 'Log out?',
+            message: "You'll need to log in again to continue.",
+            confirmLabel: 'Log Out',
+            destructive: true,
+          });
+          if (confirmed) {
+            logout.mutate();
+          }
+        }}
         loading={logout.isPending}
         style={styles.logout}
       />
     </Screen>
+  );
+}
+
+function CleanerApplicationStatus({ status }: { status: CleanerStatus }): React.JSX.Element {
+  const config =
+    status === 'PENDING'
+      ? {
+          icon: 'hourglass-outline',
+          bg: colors.warningLight,
+          fg: colors.warning,
+          title: 'Cleaner application under review',
+          text: "We're reviewing your cleaner profile. You'll switch to cleaner mode once approved.",
+        }
+      : status === 'SUSPENDED'
+        ? {
+            icon: 'pause-circle-outline',
+            bg: colors.dangerLight,
+            fg: colors.danger,
+            title: 'Cleaner account suspended',
+            text: 'Contact support for more information.',
+          }
+        : {
+            icon: 'close-circle-outline',
+            bg: colors.dangerLight,
+            fg: colors.danger,
+            title: 'Cleaner application not approved',
+            text: 'Unfortunately your application was rejected. Contact support for details.',
+          };
+
+  return (
+    <View style={[styles.statusBanner, { backgroundColor: config.bg }]}>
+      <Icon name={config.icon} size={22} color={config.fg} />
+      <View style={styles.statusBannerText}>
+        <Text style={[typography.bodyMedium, { color: config.fg }]}>{config.title}</Text>
+        <Text style={styles.statusBannerBody}>{config.text}</Text>
+      </View>
+    </View>
   );
 }
 
@@ -111,7 +185,21 @@ const styles = StyleSheet.create({
   },
   name: { ...typography.titleLg, marginTop: spacing.sm },
   email: { ...typography.body, color: colors.ink500 },
+  roleBadge: { alignSelf: 'center' },
   statsCard: { gap: spacing.md, marginBottom: spacing.xl },
+  statusBanner: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.xl,
+    padding: spacing.lg,
+    borderRadius: radii.lg,
+    alignItems: 'flex-start',
+  },
+  statusBannerText: { flex: 1, gap: spacing.xxs },
+  statusBannerBody: {
+    ...typography.caption,
+    color: colors.ink700,
+  },
   statsRow: {
     flexDirection: 'row',
     alignItems: 'center',

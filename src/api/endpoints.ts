@@ -70,4 +70,7 @@ export const endpoints = {
     deviceToken: '/notifications/device-token',
     byId: (id: string) => `/notifications/${id}`,
   },
+  files: {
+    generalUpload: '/files/general/upload',
+  },
 } as const;

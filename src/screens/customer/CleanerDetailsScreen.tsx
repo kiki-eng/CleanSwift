@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 
 import {
@@ -9,6 +9,7 @@ import {
   Button,
   Card,
   ErrorState,
+  Icon,
   Input,
   LoadingState,
   Rating,
@@ -18,6 +19,7 @@ import {
 import { useListing } from '../../features/cleaners/hooks';
 import { useCreateListingRequest } from '../../features/requests/hooks';
 import { useCleanerReviews } from '../../features/reviews/hooks';
+import { useImageUpload } from '../../features/upload/hooks';
 import { colors, radii, spacing, typography } from '../../theme';
 import type { CleanerListing, Review } from '../../types/models';
 import { displayName, formatMoney, formatUnixDate } from '../../utils/format';
@@ -55,6 +57,10 @@ function ListingDetails({ listing }: { listing: CleanerListing }): React.JSX.Ele
 
   return (
     <Screen padded={false}>
+      {listing.image_url ? (
+        <Image source={{ uri: listing.image_url }} style={styles.heroImage} />
+      ) : null}
+
       {/* Cleaner header */}
       <View style={styles.profileHeader}>
         <Avatar name={cleanerName} uri={cleaner?.user?.profile_photo_url} size={72} />
@@ -184,15 +190,24 @@ interface BookingSheetProps {
 function BookingSheet({ listing, visible, onClose }: BookingSheetProps): React.JSX.Element {
   const navigation = useNavigation();
   const createRequest = useCreateListingRequest();
+  const imageUpload = useImageUpload();
 
   const [address, setAddress] = useState('');
   const [notes, setNotes] = useState('');
   const [requestedAt, setRequestedAt] = useState<Date | null>(null);
   const [showSchedule, setShowSchedule] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>(undefined);
   const [submitted, setSubmitted] = useState(false);
 
   const addressError = address.trim().length < 5 ? 'Enter the full address' : undefined;
   const dateError = !requestedAt ? 'Pick a date and time' : undefined;
+
+  const handlePickPhoto = async (): Promise<void> => {
+    const url = await imageUpload.pickImage();
+    if (url) {
+      setPhotoUrl(url);
+    }
+  };
 
   const handleSubmit = (): void => {
     setSubmitted(true);
@@ -205,6 +220,7 @@ function BookingSheet({ listing, visible, onClose }: BookingSheetProps): React.J
         address: address.trim(),
         requested_date: requestedAt.toISOString(),
         ...(notes.trim() ? { additional_notes: notes.trim() } : {}),
+        ...(photoUrl ? { image_url: photoUrl } : {}),
       },
       {
         onSuccess: request => {
@@ -247,6 +263,24 @@ function BookingSheet({ listing, visible, onClose }: BookingSheetProps): React.J
         multiline
       />
 
+      <Text style={styles.fieldLabel}>Photo (optional)</Text>
+      <Pressable
+        onPress={handlePickPhoto}
+        disabled={imageUpload.uploading}
+        style={styles.photoPicker}>
+        {photoUrl ? (
+          <Image source={{ uri: photoUrl }} style={styles.photoPreview} />
+        ) : imageUpload.uploading ? (
+          <ActivityIndicator color={colors.primary} />
+        ) : (
+          <>
+            <Icon name="camera-outline" size={20} color={colors.ink400} />
+            <Text style={styles.photoPickerText}>Attach a photo of the area</Text>
+          </>
+        )}
+      </Pressable>
+      {imageUpload.error ? <Text style={styles.errorText}>{imageUpload.error}</Text> : null}
+
       {createRequest.isError ? (
         <Text style={styles.errorText}>{createRequest.error.message}</Text>
       ) : null}
@@ -267,6 +301,11 @@ function BookingSheet({ listing, visible, onClose }: BookingSheetProps): React.J
 }
 
 const styles = StyleSheet.create({
+  heroImage: {
+    width: '100%',
+    height: 180,
+    backgroundColor: colors.ink100,
+  },
   profileHeader: {
     alignItems: 'center',
     gap: spacing.sm,
@@ -331,6 +370,21 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs + 2,
   },
   dateButton: { marginBottom: spacing.lg },
+  photoPicker: {
+    height: 100,
+    borderRadius: radii.md,
+    borderWidth: 1.5,
+    borderColor: colors.ink200,
+    borderStyle: 'dashed',
+    backgroundColor: colors.ink50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.lg,
+    overflow: 'hidden',
+  },
+  photoPickerText: { ...typography.caption, color: colors.ink500 },
+  photoPreview: { width: '100%', height: '100%' },
   errorText: {
     ...typography.body,
     color: colors.danger,
