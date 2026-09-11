@@ -1,0 +1,7 @@
+<resources>
+    <style name="LaunchTheme" parent="AppTheme">
+        <item name="android:windowBackground">@color/brand_teal</item>
+        <item name="android:windowSplashScreenBackground">@color/brand_teal</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/cleanswift_icon</item>
+    </style>
+</resources>

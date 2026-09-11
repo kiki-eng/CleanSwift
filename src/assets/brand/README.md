@@ -17,3 +17,7 @@ it on a fully opaque solid teal #0D9488 background covering the entire square.
 Flatten the symbol to white and mint with crisp edges, removing bevels, glows,
 textures, and shadows. Keep the symbol within the central 60% of the square.
 No text or transparency.
+
+Native launch screens also use the logo: iOS `LaunchLogo.imageset` and
+`LaunchScreen.storyboard`; Android `LaunchTheme` uses a centered logo before
+Android 12 and the system splash icon on Android 12 and later.
